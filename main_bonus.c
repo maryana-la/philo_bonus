@@ -28,8 +28,6 @@ int	check_args_valid(int argc, char **argv)
 
 void	init_structure(t_all *all, int argc, char **argv)
 {
-	int i;
-
 	all->number_of_philo = ft_atoi(argv[1]);
 	all->time_to_die = (long int) ft_atoi(argv[2]);
 	all->time_to_eat = ft_atoi(argv[3]) * 1000;
@@ -63,6 +61,7 @@ t_philo	philo_init(t_all *all)
 //	}
 	philo.last_ate = 0;
 	philo.num_eat = 0;
+	philo.alive = 1;
 	philo.all = all;
 	return (philo);
 }
@@ -71,34 +70,63 @@ int main (int argc, char **argv)
 {
 	t_all all;
 	t_philo ph;
-	pid_t 	pid;
+	pid_t 	*pid;
 
 	check_args_valid(argc, argv);
 	init_structure(&all, argc, argv);
 	ph = philo_init(&all);
-//	sem_init(&ph.all->forks, 1, all.number_of_philo);
 
-	ph.all->forks = sem_open("fork", O_CREAT, 0644, ph.all->number_of_philo);
+	sem_unlink("fork");
+	sem_unlink("print");
+	sem_unlink("dead");
+	ph.all->forks = sem_open("fork", O_CREAT, 0666, ph.all->number_of_philo);
 	if (ph.all->forks == SEM_FAILED)
 	{
-		write(1, "Sem failed\n", 11);
+		write(1, "Sem failed_fork\n", 11);
 		return (1);
 	}
-	ph.all->start_time = get_time();
-	int i;
-
-	i = -1;
-	while ( ++i < all.number_of_philo)
+	ph.all->print = sem_open("print", O_CREAT, 0666, 1);
+	if (ph.all->forks == SEM_FAILED)
 	{
-		pid = fork();
-		if (pid < 0)
+		write(1, "Sem failed_print\n", 17);
+		return (1);
+	}
+	ph.all->dead = sem_open("dead", O_CREAT, 0666, 1);
+	if (ph.all->dead == SEM_FAILED)
+	{
+		write(1, "Sem failed_dead\n", 11);
+		return (1);
+	}
+
+
+
+	pid = (pid_t *)(malloc(sizeof(pid_t) * ph.all->number_of_philo));
+
+	int i;
+	i = -1;
+	sem_wait(ph.all->dead);
+	ph.all->start_time = get_time();
+	while (++i < all.number_of_philo)
+	{
+		pid[i] = fork();
+		if (pid[i] < 0)
 		{
 			write(1, "Failed to create fork\n", 22);
 			exit (1);
 		}
-		if (pid == 0)
-			philo_life(&ph, i);
+		if (pid[i] == 0)
+		{
+			if (i % 2)
+				usleep (50);
+			ph.num = i + 1;
+			ph.last_ate = get_time();
+			philo_life(&ph);
+		}
 	}
+	sem_wait(ph.all->dead);
+	i = -1;
+	while (++i < all.number_of_philo)
+		kill(pid[i], SIGKILL);
 	wait(NULL);
 	return (0);
 }

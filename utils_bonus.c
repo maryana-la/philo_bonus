@@ -22,8 +22,7 @@ void	custom_sleep(long int time)
 	while (1)
 	{
 		gettimeofday(&current_time, NULL);
-		current = \
-			(current_time.tv_sec * 1000 + current_time.tv_usec / 1000) * 1000;
+		current = (current_time.tv_sec * 1000 + current_time.tv_usec / 1000) * 1000;
 		if (current - begin < (long int)(time))
 		{
 			usleep(50);
