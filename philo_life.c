@@ -2,13 +2,13 @@
 
 void ft_print(long int time, int num, char *message)
 {
-//	printf("%ld\t ms \t%d\t", time, num);
-	ft_putnbr_fd(time, 1);
-	ft_putstr_fd("\tms\t", 1);
-	ft_putnbr_fd(num, 1);
-	ft_putstr_fd("\t", 1);
-	ft_putstr_fd(message, 1);
-	ft_putstr_fd("\n", 1);
+	printf("%ld\t ms \t%d\t%s\n", time, num, message);
+//	ft_putnbr_fd(time, 1);
+//	ft_putstr_fd("\tms\t", 1);
+//	ft_putnbr_fd(num, 1);
+//	ft_putstr_fd("\t", 1);
+//	ft_putstr_fd(message, 1);
+//	ft_putstr_fd("\n", 1);
 }
 
 void	*life_check(void *p)
@@ -23,7 +23,7 @@ void	*life_check(void *p)
 			ph->alive = 0;
 			sem_wait(ph->all->print);
 //			ft_print((get_time() - ph->all->start_time), ph->num, "died");
-			printf("%ld\tms\t%d\tdied\n", (long int)(get_time() - ph->all->start_time), ph->num);
+			printf("%ld\t ms \t%d\tdied\n", (long int)(get_time() - ph->all->start_time), ph->num);
 			sem_post(ph->all->dead);
 			return (NULL);
 		}

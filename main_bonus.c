@@ -105,7 +105,7 @@ int main (int argc, char **argv)
 	int i;
 	i = -1;
 	sem_wait(ph.all->dead);
-//	ph.all->start_time = get_time();
+	ph.all->start_time = get_time();
 	while (++i < all.number_of_philo)
 	{
 		pid[i] = fork();
@@ -118,7 +118,7 @@ int main (int argc, char **argv)
 		{
 //			if (i % 2)
 //				usleep (50);
-			ph.all->start_time = get_time();
+//			ph.all->start_time = get_time();
 			ph.num = i + 1;
 			ph.last_ate = get_time();
 			philo_life(&ph);
