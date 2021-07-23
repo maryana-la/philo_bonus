@@ -1,6 +1,5 @@
-
-#ifndef PHILO_PHILO_H
-#define PHILO_PHILO_H
+#ifndef PHILO_BONUS_H
+# define PHILO_BONUS_H
 
 # include <unistd.h>
 # include <stdio.h>
@@ -14,11 +13,10 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <signal.h>
-//# include "libft/libft.h"
 
-typedef struct	s_all
+typedef struct s_all
 {
-	int			number_of_philo;
+	int			num_of_philo;
 	long int	time_to_die;
 	int			time_to_eat;
 	int			time_to_sleep;
@@ -32,42 +30,26 @@ typedef struct	s_all
 
 typedef struct s_philo
 {
-	int 			num;
-	long int		last_ate;
-	int 			num_eat;
-	int 			alive;
-	t_all			*all;
+	int		num;
+	long	last_ate;
+	int		num_eat;
+	int		alive;
+	t_all	*all;
 }				t_philo;
 
-
-
-int	check_args_valid(int argc, char **argv);
-
-
+int			check_args_valid(int argc, char **argv);
 /*
  * 	libft utils
  */
-
-int	ft_isdigit(int c);
-int	ft_atoi(const char *str);
-
-
-long int	time_calculate(void);
-void 	custom_print(t_philo *ph, long int time, char *message, int type);
-void	ft_error_exit(char *error);
-void	ft_free_error(char *error, t_philo *philo);
-
+int			ft_isdigit(int c);
+int			ft_atoi(const char *str);
 /*
  *  bonus functions
  */
-
 long int	get_time(void);
+int			philo_life(t_philo *ph);
 void		custom_sleep(long int time);
-int		philo_life(t_philo *ph);
-
-char			*ft_itoa(int n);
-void	ft_putchar(char c);
-void	ft_putnbr(int n);
-void	ft_putstr(char *s);
-
-#endif //PHILO_PHILO_H
+void		ft_putchar(char c);
+void		ft_putnbr(int n);
+void		ft_putstr(char *s);
+#endif

@@ -2,8 +2,8 @@
 
 int	check_args_valid(int argc, char **argv)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	if (argc < 5 || argc > 6)
 	{
@@ -28,7 +28,7 @@ int	check_args_valid(int argc, char **argv)
 
 void	init_structure(t_all *all, int argc, char **argv)
 {
-	all->number_of_philo = ft_atoi(argv[1]);
+	all->num_of_philo = ft_atoi(argv[1]);
 	all->time_to_die = (long int) ft_atoi(argv[2]);
 	all->time_to_eat = ft_atoi(argv[3]) * 1000;
 	all->time_to_sleep = ft_atoi(argv[4]) * 1000;
@@ -36,7 +36,8 @@ void	init_structure(t_all *all, int argc, char **argv)
 		all->num_of_meal = ft_atoi(argv[5]);
 	else
 		all->num_of_meal = -1;
-	if (all->number_of_philo < 1 || all->time_to_die < 1 || all->time_to_eat < 1 || all->time_to_sleep < 1 || all->num_of_meal == 0)
+	if (all->num_of_philo < 1 || all->time_to_die < 1 || \
+		all->time_to_eat < 1 || all->time_to_sleep < 1 || all->num_of_meal == 0)
 	{
 		write(1, "Argument is too small\n", 22);
 		exit (1);
@@ -54,7 +55,7 @@ t_philo	philo_init(t_all *all)
 	sem_unlink("print");
 	sem_unlink("dead");
 	sem_unlink("flag_death");
-	philo.all->forks = sem_open("fork", O_CREAT, 0666, philo.all->number_of_philo);
+	philo.all->forks = sem_open("fork", O_CREAT, 0666, philo.all->num_of_philo);
 	philo.all->print = sem_open("print", O_CREAT, 0666, 1);
 	philo.all->dead = sem_open("dead", O_CREAT, 0666, 1);
 	philo.all->flag_death = sem_open("flag_death", O_CREAT, 0666, 1);
@@ -67,14 +68,14 @@ t_philo	philo_init(t_all *all)
 	return (philo);
 }
 
-void launch_processes(t_philo *ph, pid_t *pid)
+void	launch_processes(t_philo *ph, pid_t *pid)
 {
-	int i;
-	int status;
+	int	i;
+	int	status;
 
 	i = -1;
 	ph->all->start_time = get_time();
-	while (++i < ph->all->number_of_philo)
+	while (++i < ph->all->num_of_philo)
 	{
 		pid[i] = fork();
 		if (pid[i] < 0)
@@ -90,41 +91,39 @@ void launch_processes(t_philo *ph, pid_t *pid)
 		}
 	}
 
-	int full;
-	int wstatus;
+	int	full;
+	int	wstatus;
+	int	j;
+
 	full = 0;
 	i = -1;
-	while (++i < ph->all->number_of_philo)
+	while (++i < ph->all->num_of_philo)
 	{
-		int j = -1;
+		j = -1;
 		status = 0;
 		waitpid(-1, &status, 0);
 
 		if (WIFEXITED(status))
 		{
 			wstatus = WEXITSTATUS(status);
-//			printf("%d exit with %d\n", i, wstatus);
 			if (wstatus == 2)
 			{
-				while (++j < ph->all->number_of_philo)
+				while (++j < ph->all->num_of_philo)
 					kill(pid[j], SIGKILL);
 				break ;
 			}
 			else if (wstatus == 1)
 			{
 				full++;
-				if (full == ph->all->number_of_philo)
-					break;
+				if (full == ph->all->num_of_philo)
+					break ;
 			}
 		}
 	}
 }
 
-
-
-void close_free(t_philo *ph, pid_t *pid)
+void	close_free(t_philo *ph, pid_t *pid)
 {
-
 	sem_close(ph->all->forks);
 	sem_close(ph->all->print);
 	sem_close(ph->all->dead);
@@ -137,25 +136,17 @@ void close_free(t_philo *ph, pid_t *pid)
 		free(pid);
 }
 
-int main (int argc, char **argv)
+int	main(int argc, char **argv)
 {
-	t_all all;
-	t_philo ph;
-	pid_t 	*pid;
-	int i;
+	t_all	all;
+	t_philo	ph;
+	pid_t	*pid;
 
 	check_args_valid(argc, argv);
 	init_structure(&all, argc, argv);
 	ph = philo_init(&all);
-	pid = (pid_t *)(malloc(sizeof(pid_t) * ph.all->number_of_philo));
+	pid = (pid_t *)(malloc(sizeof(pid_t) * ph.all->num_of_philo));
 	launch_processes(&ph, pid);
-
-//	sem_wait(ph.all->dead);
-//	i = -1;
-//	while (++i < all.number_of_philo)
-//		kill(pid[i], SIGKILL);
-//	wait(NULL);
 	close_free(&ph, pid);
 	return (0);
 }
-

@@ -22,20 +22,15 @@ void	custom_sleep(long int time)
 	while (1)
 	{
 		gettimeofday(&current_time, NULL);
-		current = (current_time.tv_sec * 1000 + current_time.tv_usec / 1000) * 1000;
+		current = (current_time.tv_sec * 1000 + \
+			current_time.tv_usec / 1000) * 1000;
 		if (current - begin < (long int)(time))
 		{
-			usleep(400);
+			usleep(500);
 			continue ;
 		}
 		break ;
 	}
-}
-
-void	ft_error_exit(char *error)
-{
-	printf("%s\n", error);
-	exit (1);
 }
 
 int	ft_isdigit(int c)
@@ -53,7 +48,7 @@ int	ft_atoi(const char *str)
 
 	num = 0;
 	minus = 1;
-	while (*str == '\t' || *str == '\n' || *str == ' ' ||
+	while (*str == '\t' || *str == '\n' || *str == ' ' || \
 		   *str == '\v' || *str == '\f' || *str == '\r')
 		str++;
 	if (*str == '+' || *str == '-')
@@ -76,12 +71,12 @@ int	ft_atoi(const char *str)
 
 void	ft_putchar(char c)
 {
-		write(1, &c, 1);
+	write(1, &c, 1);
 }
 
 void	ft_putnbr(int n)
 {
-	char a;
+	char	a;
 
 	if (n == -2147483648)
 	{
