@@ -46,67 +46,36 @@ void	init_structure(t_all *all, int argc, char **argv)
 t_philo	philo_init(t_all *all)
 {
 	t_philo	philo;
-//	int		i;
-//
-//	i = -1;
-//	philo = malloc(sizeof(t_philo) * (all->number_of_philo + 1));
-//	if (!philo)
-//		return (NULL);
-//	while (++i < all->number_of_philo)
-//	{
-//		philo[i].num = i + 1;
-//		philo[i].last_ate = 0;
-//		philo[i].num_eat = 0;
-//		philo[i].all = all;
-//	}
-	philo.last_ate = 0;
+
 	philo.num_eat = 0;
 	philo.alive = 1;
 	philo.all = all;
-	return (philo);
-}
-
-int main (int argc, char **argv)
-{
-	t_all all;
-	t_philo ph;
-	pid_t 	*pid;
-
-	check_args_valid(argc, argv);
-	init_structure(&all, argc, argv);
-	ph = philo_init(&all);
-
 	sem_unlink("fork");
 	sem_unlink("print");
 	sem_unlink("dead");
-	ph.all->forks = sem_open("fork", O_CREAT, 0666, ph.all->number_of_philo);
-	if (ph.all->forks == SEM_FAILED)
+	sem_unlink("flag_death");
+	philo.all->forks = sem_open("fork", O_CREAT, 0666, philo.all->number_of_philo);
+	philo.all->print = sem_open("print", O_CREAT, 0666, 1);
+	philo.all->dead = sem_open("dead", O_CREAT, 0666, 1);
+	philo.all->flag_death = sem_open("flag_death", O_CREAT, 0666, 1);
+	if (philo.all->forks == SEM_FAILED || philo.all->print == SEM_FAILED || \
+		philo.all->dead == SEM_FAILED || philo.all->flag_death == SEM_FAILED)
 	{
-		write(1, "Sem failed_fork\n", 11);
-		return (1);
+		write(1, "Sem failed\n", 11);
+		exit (1);
 	}
-	ph.all->print = sem_open("print", O_CREAT, 0666, 1);
-	if (ph.all->forks == SEM_FAILED)
-	{
-		write(1, "Sem failed_print\n", 17);
-		return (1);
-	}
-	ph.all->dead = sem_open("dead", O_CREAT, 0666, 1);
-	if (ph.all->dead == SEM_FAILED)
-	{
-		write(1, "Sem failed_dead\n", 11);
-		return (1);
-	}
+	return (philo);
+}
 
-
-
-	pid = (pid_t *)(malloc(sizeof(pid_t) * ph.all->number_of_philo));
-
+void launch_processes(t_philo *ph, pid_t *pid)
+{
 	int i;
+	int status;
+
 	i = -1;
-	sem_wait(ph.all->dead);
-	ph.all->start_time = get_time();
-	while (++i < all.number_of_philo)
+	sem_wait(ph->all->dead);
+	ph->all->start_time = get_time();
+	while (++i < ph->all->number_of_philo)
 	{
 		pid[i] = fork();
 		if (pid[i] < 0)
@@ -116,28 +85,70 @@ int main (int argc, char **argv)
 		}
 		if (pid[i] == 0)
 		{
-//			if (i % 2)
-//				usleep (50);
-//			ph.all->start_time = get_time();
-			ph.num = i + 1;
-			ph.last_ate = get_time();
-			philo_life(&ph);
+			ph->num = i + 1;
+			ph->last_ate = get_time();
+			philo_life(ph);
 		}
 	}
-	sem_wait(ph.all->dead);
-	i = -1;
-	while (++i < all.number_of_philo)
-		kill(pid[i], SIGKILL);
-	wait(NULL);
 
-	sem_close(ph.all->forks);
-	sem_close(ph.all->print);
-	sem_close(ph.all->dead);
+	int full;
+	full = 0;
+	i = -1;
+	while (++i < ph->all->number_of_philo)
+	{
+		int j = -1;
+		status = 0;
+		waitpid(0, &status, 0);
+		if (status == 2)
+		{
+			while (++j < ph->all->number_of_philo)
+				kill(pid[i], SIGKILL);
+		}
+		else if (status == 1)
+		{
+			full++;
+			if (full == ph->all->number_of_philo)
+				break;
+		}
+	}
+}
+
+
+
+void close_free(t_philo *ph, pid_t *pid)
+{
+
+	sem_close(ph->all->forks);
+	sem_close(ph->all->print);
+	sem_close(ph->all->dead);
+	sem_close(ph->all->flag_death);
 	sem_unlink("fork");
 	sem_unlink("print");
 	sem_unlink("dead");
+	sem_unlink("flag_death");
 	if (pid)
 		free(pid);
+}
+
+int main (int argc, char **argv)
+{
+	t_all all;
+	t_philo ph;
+	pid_t 	*pid;
+	int i;
+
+	check_args_valid(argc, argv);
+	init_structure(&all, argc, argv);
+	ph = philo_init(&all);
+	pid = (pid_t *)(malloc(sizeof(pid_t) * ph.all->number_of_philo));
+	launch_processes(&ph, pid);
+
+//	sem_wait(ph.all->dead);
+//	i = -1;
+//	while (++i < all.number_of_philo)
+//		kill(pid[i], SIGKILL);
+//	wait(NULL);
+	close_free(&ph, pid);
 	return (0);
 }
 

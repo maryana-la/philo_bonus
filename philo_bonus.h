@@ -14,6 +14,7 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <signal.h>
+//# include "libft/libft.h"
 
 typedef struct	s_all
 {
@@ -26,6 +27,7 @@ typedef struct	s_all
 	sem_t		*forks;
 	sem_t		*print;
 	sem_t		*dead;
+	sem_t		*flag_death;
 }				t_all;
 
 typedef struct s_philo
@@ -61,6 +63,11 @@ void	ft_free_error(char *error, t_philo *philo);
 
 long int	get_time(void);
 void		custom_sleep(long int time);
-void		philo_life(t_philo *ph);
+int		philo_life(t_philo *ph);
+
+char			*ft_itoa(int n);
+void	ft_putchar(char c);
+void	ft_putnbr(int n);
+void	ft_putstr(char *s);
 
 #endif //PHILO_PHILO_H

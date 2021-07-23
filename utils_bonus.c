@@ -25,7 +25,7 @@ void	custom_sleep(long int time)
 		current = (current_time.tv_sec * 1000 + current_time.tv_usec / 1000) * 1000;
 		if (current - begin < (long int)(time))
 		{
-			usleep(250);
+			usleep(400);
 			continue ;
 		}
 		break ;
@@ -38,37 +38,6 @@ void	ft_error_exit(char *error)
 	exit (1);
 }
 
-//void	ft_free_error(char *error, t_philo *philo)
-//{
-//	if (philo->all->forks)
-//		free(philo->all->forks);
-//	if (philo->ph)
-//		free(philo->ph);
-//	if (philo)
-//		free(philo);
-//	printf("%s\n", error);
-//	exit (1);
-//}
-//
-//void	custom_print(t_philo *ph, long int time, char *message, int type)
-//{
-//	pthread_mutex_lock(&ph->all->flag_lock);
-//	if (!ph->all->flag)
-//	{
-//		pthread_mutex_lock(&ph->all->print);
-//		printf("%ld\tms\t%d\t%s", time, ph->num, message);
-//		pthread_mutex_unlock(&ph->all->print);
-//	}
-//	pthread_mutex_unlock(&ph->all->flag_lock);
-//	if (type == 2)
-//	{
-//		pthread_mutex_lock(&ph->all->print);
-//		printf("%ld\tms\t%d\t%s", time, ph->num, message);
-//		pthread_mutex_unlock(&ph->all->print);
-//	}
-//}
-
-
 int	ft_isdigit(int c)
 {
 	if (c >= '0' && c <= '9')
@@ -76,7 +45,6 @@ int	ft_isdigit(int c)
 	else
 		return (0);
 }
-
 
 int	ft_atoi(const char *str)
 {
@@ -104,4 +72,52 @@ int	ft_atoi(const char *str)
 		str++;
 	}
 	return (minus * (int)num);
+}
+
+void	ft_putchar(char c)
+{
+		write(1, &c, 1);
+}
+
+void	ft_putnbr(int n)
+{
+	char a;
+
+	if (n == -2147483648)
+	{
+		write(1, "-2", 2);
+		ft_putnbr(147483648);
+	}
+	else if (n < 0)
+	{
+		ft_putchar('-');
+		ft_putnbr(-n);
+	}
+	else if (n > 9)
+	{
+		ft_putnbr(n / 10);
+		ft_putnbr(n % 10);
+	}
+	else if (n >= 0 && n <= 9)
+	{
+		a = n + '0';
+		ft_putchar(a);
+	}
+}
+
+void	ft_putstr(char *s)
+{
+	int		i;
+	char	string;
+
+	i = 0;
+	if (s)
+	{
+		while (s[i] != '\0')
+		{
+			string = s[i];
+			write(1, &string, 1);
+			i++;
+		}
+	}
 }
