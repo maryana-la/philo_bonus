@@ -21,21 +21,11 @@ void	*life_check(void *p)
 		{
 			sem_wait(ph->all->flag_death);
 			ph->alive = 0;
-//			sem_post(ph->all->flag_death);
+			sem_post(ph->all->flag_death);
 			sem_wait(ph->all->print);
 			ft_print((get_time() - ph->all->start_time), ph->num, "died");
-//			sem_post(ph->all->dead);
 			exit (2);
 		}
-//		if (ph->all->num_of_meal != -1 && ph->num_eat >= ph->all->num_of_meal)
-//		{
-//			ph->alive = 0;
-//			printf("full %d", ph->num);
-//			sem_wait(ph->all->print);
-//			sem_post(ph->all->dead);
-//			return (NULL);
-//		}
-		usleep(100);
 	}
 }
 

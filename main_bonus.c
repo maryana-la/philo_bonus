@@ -73,7 +73,6 @@ void launch_processes(t_philo *ph, pid_t *pid)
 	int status;
 
 	i = -1;
-	sem_wait(ph->all->dead);
 	ph->all->start_time = get_time();
 	while (++i < ph->all->number_of_philo)
 	{
@@ -92,23 +91,31 @@ void launch_processes(t_philo *ph, pid_t *pid)
 	}
 
 	int full;
+	int wstatus;
 	full = 0;
 	i = -1;
 	while (++i < ph->all->number_of_philo)
 	{
 		int j = -1;
 		status = 0;
-		waitpid(0, &status, 0);
-		if (status == 2)
+		waitpid(-1, &status, 0);
+
+		if (WIFEXITED(status))
 		{
-			while (++j < ph->all->number_of_philo)
-				kill(pid[i], SIGKILL);
-		}
-		else if (status == 1)
-		{
-			full++;
-			if (full == ph->all->number_of_philo)
-				break;
+			wstatus = WEXITSTATUS(status);
+//			printf("%d exit with %d\n", i, wstatus);
+			if (wstatus == 2)
+			{
+				while (++j < ph->all->number_of_philo)
+					kill(pid[j], SIGKILL);
+				break ;
+			}
+			else if (wstatus == 1)
+			{
+				full++;
+				if (full == ph->all->number_of_philo)
+					break;
+			}
 		}
 	}
 }
