@@ -37,19 +37,38 @@ typedef struct s_philo
 	t_all	*all;
 }				t_philo;
 
+/*
+ * 	main
+ */
+
+t_philo		philo_init(t_all *all);
+void		monitor_process_exit(t_philo *ph, pid_t *pid);
+void		launch_processes(t_philo *ph, pid_t *pid);
+void		close_free(t_philo *ph, pid_t *pid);
+
+/*
+ * 	philo_life
+ */
+int			philo_life(t_philo *ph);
+void		*life_check(void *p);
+int			eating(t_philo *ph);
+
+/*
+ * 	utils
+ */
 int			check_args_valid(int argc, char **argv);
+void		init_structure(t_all *all, int argc, char **argv);
+void		ft_print(long int time, int num, char *message);
+long int	get_time(void);
+void		custom_sleep(long int time);
+
 /*
  * 	libft utils
  */
 int			ft_isdigit(int c);
 int			ft_atoi(const char *str);
-/*
- *  bonus functions
- */
-long int	get_time(void);
-int			philo_life(t_philo *ph);
-void		custom_sleep(long int time);
 void		ft_putchar(char c);
 void		ft_putnbr(int n);
 void		ft_putstr(char *s);
+
 #endif

@@ -1,13 +1,26 @@
 #include "philo_bonus.h"
 
-void	ft_print(long int time, int num, char *message)
+int	philo_life(t_philo *ph)
 {
-	ft_putnbr(time);
-	ft_putstr("\tms\t");
-	ft_putnbr(num);
-	ft_putstr("\t");
-	ft_putstr(message);
-	ft_putstr("\n");
+	pthread_t	death;
+
+	if (!(ph->num % 2))
+		custom_sleep(ph->all->time_to_eat);
+	pthread_create(&death, NULL, &life_check, (void *)ph);
+	while (ph->alive == 1)
+	{
+		if (eating(ph) == 1)
+			break ;
+		sem_wait(ph->all->print);
+		ft_print((get_time() - ph->all->start_time), ph->num, "is sleeping");
+		sem_post(ph->all->print);
+		custom_sleep(ph->all->time_to_sleep);
+		sem_wait(ph->all->print);
+		ft_print((get_time() - ph->all->start_time), ph->num, "is thinking");
+		sem_post(ph->all->print);
+	}
+	pthread_join(death, NULL);
+	exit (2);
 }
 
 void	*life_check(void *p)
@@ -17,6 +30,7 @@ void	*life_check(void *p)
 	ph = (t_philo *)p;
 	while (1)
 	{
+		usleep(1000);
 		if ((get_time() - ph->last_ate) > (ph->all->time_to_die))
 		{
 			sem_wait(ph->all->flag_death);
@@ -26,7 +40,6 @@ void	*life_check(void *p)
 			ft_print((get_time() - ph->all->start_time), ph->num, "died");
 			exit (2);
 		}
-		usleep(200);
 	}
 }
 
@@ -52,27 +65,4 @@ int	eating(t_philo *ph)
 	if (ph->all->num_of_meal > 0 && ++ph->num_eat >= ph->all->num_of_meal)
 		exit (1);
 	return (0);
-}
-
-int	philo_life(t_philo *ph)
-{
-	pthread_t	death;
-
-	if (!(ph->num % 2))
-		custom_sleep(ph->all->time_to_eat);
-	pthread_create(&death, NULL, &life_check, (void *)ph);
-	while (ph->alive == 1)
-	{
-		if (eating(ph) == 1)
-			break ;
-		sem_wait(ph->all->print);
-		ft_print((get_time() - ph->all->start_time), ph->num, "is sleeping");
-		sem_post(ph->all->print);
-		custom_sleep(ph->all->time_to_sleep);
-		sem_wait(ph->all->print);
-		ft_print((get_time() - ph->all->start_time), ph->num, "is thinking");
-		sem_post(ph->all->print);
-	}
-	pthread_join(death, NULL);
-	exit (2);
 }
