@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: rchelsea <rchelsea@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2021/07/27 15:53:09 by rchelsea          #+#    #+#              #
+#    Updated: 2021/07/27 15:53:10 by rchelsea         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 NAME	=	philo_bonus
 
 CC		=	gcc
@@ -13,7 +25,7 @@ OBJ 	:=	$(addprefix $(O_FOLD), ${SRC:.c=.o})
 HEADERS	=	philo_bonus.h
 
 $(O_FOLD)%.o : %.c $(HEADERS)
-	mkdir -p $(O_FOLD)
+	@mkdir -p $(O_FOLD)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 all: $(NAME)
@@ -23,7 +35,7 @@ $(NAME): $(OBJ) $(HEADERS)
 
 clean:
 	rm -f $(OBJ)
-	rm -rf $(O_FOLD)
+	@rm -rf $(O_FOLD)
 
 fclean: clean
 	rm -f $(NAME)
