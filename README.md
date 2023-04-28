@@ -2,17 +2,20 @@
 
 ## C solution for Dining Philosophers problem explnation
 
-Philosophers dine together at the same table.All the forks are put in the middle of the table, the quantity of forks equals to the number of philosophers. The dish served is a kind of spaghetti which has to be eaten with two forks. 
+Philosophers dine together at the same table. All the forks are put in the middle of the table, the quantity of forks equals to the number of philosophers. 
 
-Each philosopher can only alternately think and eat. Moreover, a philosopher can only eat their spaghetti when they have 2 fork. After an individual philosopher finishes eating, they will return forks to the middle of the table. 
+The dish served is a kind of spaghetti which has to be eaten with two forks, so philosopher can only eat when he has 2 forks. After the meal the philosopher returns forks to the middle of the table. 
 
-The problem is to design a regimen such that no philosopher will starve; i.e., each can forever continue to alternate between eating and thinking, assuming that no philosopher can know when others may want to eat or think.
+The problem is to design a regimen such that no philosopher will starve, i.e., each can forever continue to alternate between eating and thinking, assuming that no philosopher can know when others may want to eat or think.
+
+![forks_in_the_middle Small](https://user-images.githubusercontent.com/75047240/235220312-5f681c58-b697-4d6d-98f4-b3660734fe8f.jpeg)
+
 
 ## Usage
 
 ```bash
 make
-./philo_bonus 3 600 200 200
+./philo 3 600 200 200 4
 ```
 
 - number_of_philosophers: The number of philosophers and also the number of forks.
@@ -23,25 +26,32 @@ make
 
 
 ## Test cases
-```text
+
 No philosopher should die
+```text
 5 800 200 200
 5 600 150 150
 4 410 200 200
 100 800 200 200
 105 800 200 200
 200 800 200 200
+```
 
 Philosopher should die
+```text
 1 800 200 200
 4 310 200 100
 4 200 205 200
+```
 
 Simulation should stop after indicated number of meals
+```text
 5 800 200 200 2
 4 410 200 200 10
+```
 
 Program should not crash
+```text
 -5 600 200 200
 4 -5 200 200
 4 600 -5 200
